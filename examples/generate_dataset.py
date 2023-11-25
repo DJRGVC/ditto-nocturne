@@ -114,12 +114,12 @@ def collect_full_images(sim, vehicle):
     imgs = np.stack(imgs)
     return imgs
 
-def save_to_npz(file, imgs, actions):
+def save_to_npz(file, imgs, actions, resets):
     """
     Save all the data to an NPZ file, which is used for episodes.
     """
     with open("examples/episodes/" + file[:-5] + ".npz", "wb") as f:
-        np.savez(f, images=imgs, actions=actions)
+        np.savez(f, images=imgs, actions=actions, resets=resets)
 
 def main():
     """
@@ -154,6 +154,8 @@ def main():
 
                 # Get discretized set of actions
                 actions = discretized_expert_action(ft_vehicle, scenario)
+                resets = [False] * len(actions)
+                resets[-1] = True
                 print("> Got discretized expert actions")
 
                 # [TO-DO] Change to cone images?
@@ -161,7 +163,7 @@ def main():
                 print("> Got all images")
 
                 # Save file
-                save_to_npz(file, imgs, actions)
+                save_to_npz(file, imgs, np.array(actions), np.array(resets))
                 print("> Saved to a file!")
                 print("")
 
