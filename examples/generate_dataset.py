@@ -9,11 +9,11 @@ import os
 from scipy import stats
 
 # Constants for dealing with expert actions
-ACC_RANGE = (-6, 6)
-STEERING_RANGE = (-1, 1)
+ACC_RANGE, ACC_BUCKETS = (-6, 6), 13
+STEERING_RANGE, STEERING_BUCKETS = (-1, 1), 21
 TIME_RANGE = 90
 
-# Constants for dealing with scenarios
+# Constants for dealing with scenarios (CHANGE TO YOUR FILE PATH!)
 FILE_PATH = "/Users/cpondoc/Desktop/ditto-nocturne/nocturne/nocturne_mini/formatted_json_v2_no_tl_valid/"
 scenario_config = {
     'start_time': 0, # When to start the simulation
@@ -34,13 +34,44 @@ def find_full_timestep_vehicle(moving_vehicles, scenario):
 
         # Break out if there is a non-existent action at a time step
         for time in range(TIME_RANGE):
-            if (scenario.expert_action(vehicle, time) is None):
-                satisfied_all = False
+            expert_action = scenario.expert_action(vehicle, time)
+            if (expert_action is None):
+                satisfies_all = False
                 break
+            else:
+                if (np.isnan(expert_action.acceleration) or np.isnan(expert_action.steering)):
+                    satisfies_all = False
+                    break
 
         # Return if it actually went through each time step
         if (satisfies_all):
             return vehicle
+
+    # If no match found, return None
+    return None
+
+def discretized_expert_action(ft_vehicle, scenario):
+    """
+    Given a set of expert action dictionaries, return discrete action.
+    """
+    # For each time step, grab expert action
+    action_indices = []
+    for time in range(TIME_RANGE):
+        expert_action = scenario.expert_action(ft_vehicle, time)
+
+        # Calculate index of acceleration
+        acc_index = round(expert_action.acceleration) - ACC_RANGE[0]
+        acc_index = min(max(acc_index, 0), ACC_BUCKETS)
+
+        # Calculate index of steering
+        steering_index = int((round(expert_action.steering, 1) - STEERING_RANGE[0]) / .1)
+        steering_index = min(max(steering_index, 0), STEERING_BUCKETS)
+
+        # Put together to calculate final index
+        final_index = acc_index * STEERING_BUCKETS + steering_index
+        action_indices.append(final_index)
+
+    return action_indices
 
 def display_img(img):
     """
@@ -49,7 +80,7 @@ def display_img(img):
     plt.imshow(img, interpolation='nearest')
     plt.show()
 
-def collect_full_images(sim):
+def collect_full_images(sim, vehicle):
     """
     Iterate and collect images of timesteps for fully observable case.
     """
@@ -61,24 +92,34 @@ def collect_full_images(sim):
     for i in range(steps):
         sim.step(dt)
         scenario = sim.getScenario()
-        img = scenario.getImage(
-            img_width=2000, # 500?
-            img_height=2000, # 500?
+
+        # Specifically, get a cone image to emulate with just one vehicle
+        img = scenario.getConeImage(
+            source=vehicle,
+            view_dist=80,
+            view_angle=np.pi * (120 / 180),
+            head_angle=0.0,
+            img_width=1600, # 500?
+            img_height=1600, # 500?
             padding=50.0, # 10?
-            draw_target_positions=False,
+            draw_target_position=False,
         )
+
+        # [TO-DO] Check if we need to change to grayscale?
+        img = np.mean(img, axis=2, dtype=np.uint8)
+        np.expand_dims(img, axis=2)
         imgs.append(img)
 
     # Stack them all together into an individual array
     imgs = np.stack(imgs)
     return imgs
 
-def save_to_npz(imgs):
+def save_to_npz(file, imgs, actions):
     """
     Save all the data to an NPZ file, which is used for episodes.
     """
-    with open("examples/episodes/sample.npz", "wb") as f:
-        np.savez(f, images=imgs)
+    with open("examples/episodes/" + file[:-5] + ".npz", "wb") as f:
+        np.savez(f, images=imgs, actions=actions)
 
 def main():
     """
@@ -106,34 +147,23 @@ def main():
             objects_that_moved = scenario.getObjectsThatMoved()
             moving_vehicles = [obj for obj in scenario.getVehicles() if obj in objects_that_moved]
             ft_vehicle = find_full_timestep_vehicle(moving_vehicles, scenario)
-            print("> Found a vehicle with actions at all timesteps")
 
-            # Get discretized set of actions
-            actions = discretized_expert_actions(ft_vehicle)
-            print("> Got discretized expert actions")
+            # Only run if we know we have a full timestep vehicle
+            if (ft_vehicle != None):
+                print("> Found a vehicle with actions at all timesteps")
 
-            # Formatting
-            print("")
+                # Get discretized set of actions
+                actions = discretized_expert_action(ft_vehicle, scenario)
+                print("> Got discretized expert actions")
 
-    # Create simulation
-    '''
+                # [TO-DO] Change to cone images?
+                imgs = collect_full_images(sim, ft_vehicle)
+                print("> Got all images")
 
-    # Collect all images from the simulation
-    imgs = collect_full_images(sim)
-    print("Collected all of the images from the simulation!")
-
-    # Get a random vehicle that moved
-    objects_that_moved = scenario.getObjectsThatMoved()
-    moving_vehicles = [obj for obj in scenario.getVehicles() if obj in objects_that_moved]
-    ego_vehicle = moving_vehicles[1]
-
-    # Get their action trajectory
-    for time in range(90):
-        print("Action " + str(time) + ":", scenario.expert_action(ego_vehicle, time))
-
-    # Save images
-    save_to_npz(imgs)
-    print("Saved to a file!")'''
+                # Save file
+                save_to_npz(file, imgs, actions)
+                print("> Saved to a file!")
+                print("")
 
 if __name__ == '__main__':
     main()
