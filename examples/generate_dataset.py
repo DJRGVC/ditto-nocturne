@@ -73,6 +73,15 @@ def main():
     imgs = collect_full_images(sim)
     print("Collected all of the images from the simulation!")
 
+    # Get a random vehicle that moved
+    objects_that_moved = scenario.getObjectsThatMoved()
+    moving_vehicles = [obj for obj in scenario.getVehicles() if obj in objects_that_moved]
+    ego_vehicle = moving_vehicles[0]
+
+    # Get their action trajectory
+    for time in range(90):
+        print("Action " + str(time) + ":", scenario.expert_action(ego_vehicle, time))
+
     # Save images
     save_to_npz(imgs)
     print("Saved to a file!")
