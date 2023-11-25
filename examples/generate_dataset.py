@@ -45,7 +45,14 @@ def collect_full_images(sim):
 
     # Stack them all together into an individual array
     imgs = np.stack(imgs)
-    print("Stack of images shape: ", imgs.shape)
+    return imgs
+
+def save_to_npz(imgs):
+    """
+    Save all the data to an NPZ file, which is used for episodes.
+    """
+    with open("examples/episodes/sample.npz", "wb") as f:
+        np.savez(f, images=imgs)
 
 def main():
     """
@@ -63,21 +70,12 @@ def main():
         all_vehicles[i].expert_control = True
 
     # Collect all images from the simulation
-    collect_full_images(sim)
+    imgs = collect_full_images(sim)
+    print("Collected all of the images from the simulation!")
 
-    # Now, get all vehicles that moved
-    '''objects_that_moved = scenario.getObjectsThatMoved()
-    moving_vehicles = [obj for obj in scenario.getVehicles() if obj in objects_that_moved]
-    print(f'Found {len(moving_vehicles)} moving vehicles in scene: {[vehicle.getID() for vehicle in moving_vehicles]}')
-
-    # Select a vehicle that moved
-    ego_vehicle = moving_vehicles[0]
-    print(f'Selected vehicle # {ego_vehicle.getID()}')
-
-    # Set to expert control
-    scenario.expert_action(ego_vehicle, time)
-    time = 5
-    print(scenario.expert_action(ego_vehicle, time))'''
+    # Save images
+    save_to_npz(imgs)
+    print("Saved to a file!")
 
 if __name__ == '__main__':
     main()

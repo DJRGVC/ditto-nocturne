@@ -1,2 +1,6 @@
-examples/rollout
+# Standard stuff to ignore
 .DS_Store
+
+# Save example episodes and rollout
+examples/rollout
+examples/episodes
