@@ -77,7 +77,7 @@ def display_img(img):
     """
     Helper function that can be used ad-hoc to display image.
     """
-    plt.imshow(img, interpolation='nearest')
+    plt.imshow(img, cmap='gray')
     plt.show()
 
 def collect_full_images(sim, vehicle):
@@ -107,7 +107,8 @@ def collect_full_images(sim, vehicle):
 
         # [TO-DO] Check if we need to change to grayscale?
         img = np.mean(img, axis=2, dtype=np.uint8)
-        np.expand_dims(img, axis=2)
+        img = np.expand_dims(img, axis=2)
+        display_img(img)
         imgs.append(img)
 
     # Stack them all together into an individual array
