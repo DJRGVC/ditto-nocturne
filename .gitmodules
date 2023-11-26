@@ -1,3 +1,6 @@
 [submodule "nocturne"]
 	path = nocturne
 	url = https://github.com/facebookresearch/nocturne.git
+[submodule "DITTO"]
+	path = DITTO
+	url = https://github.com/cpondoc/DITTO.git
