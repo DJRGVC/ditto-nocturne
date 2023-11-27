@@ -37,7 +37,7 @@ Finally, when reporting the final action, I effectively mapped the two actions i
 
 ## Training the World Model
 
-I first started off by trying out the DITTO code to generate a WM for Breakout. The code was working, and I was able to visualize the WM's reconstruction of the image of the Breakout game, which was super neat.
+I first started off by trying out the DITTO code to generate a WM for Breakout. The [code was working](https://wandb.ai/pondoc/world-model/runs/fh61muz2?workspace=user-cpondoc), and I was able to visualize the WM's reconstruction of the image of the Breakout game, which was super neat.
 
 <p align="center">
   <img src="imgs/breakout_wm.png" />
