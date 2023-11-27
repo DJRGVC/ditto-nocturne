@@ -41,13 +41,13 @@ I first started off by trying out the DITTO code to generate a WM for Breakout. 
 
 From there, I took a stab at training a WM based on the Nocturne data that I had collected. In general, just to align alongside of the existing DITTO code, not much had to be changed. In particular, perhaps the biggest change was defining the correct dimensionality of the action space to ensure that the function `fix_actions` would appropriately encode each action as a one-hot vector.
 
-After training for a bit, one issue that I found was that the images were being resized into 64 by 64 pixel images. While these sizes worked for breakout, given the vast amount of details provided in a sample Nocturne scenario, I decided to try and increase the size of the image that the model would reproduce. Specifically, I tried to output images of 128 by 128 pixel dimensions.
+After training for a bit, one issue that I found was that the images were being resized into 64 by 64 pixel images. While these sizes worked for breakout, given the vast amount of details provided in a sample Nocturne scenario, I decided to try and increase the size of the image that the model would reproduce. Specifically, I tried to [output images](https://github.com/cpondoc/DITTO/blob/d3da456d6a096ae12948fc6cadd2962f9e7d7b4a/src/data/d4rl_dataset.py#L40) of 128 by 128 pixel dimensions.
 
 This took a bit of time and a lot of changing around, but I was able to get it done. The steps I took were the following:
-- Adjusting the `cnn_depth` of the Recurrent State Space Model (RSSM) to align with the eventual output of the encoder in the WM architecture
-- Adding an extra pair of an Activation and Transpose 2D Convolutional Layer at the end of the decoder to ensure that the output was 128 by 128
+- Adjusting the `cnn_depth` within [`config.py`](https://github.com/cpondoc/DITTO/blob/d3da456d6a096ae12948fc6cadd2962f9e7d7b4a/src/config/config.py#L26) of the Recurrent State Space Model (RSSM) to align with the eventual output of the encoder in the WM architecture
+- Adding an [extra pair](https://github.com/cpondoc/DITTO/blob/d3da456d6a096ae12948fc6cadd2962f9e7d7b4a/src/models/decoders.py#L61) of an Activation and Transpose 2D Convolutional Layer at the end of the decoder to ensure that the output was 128 by 128
 
-Ultimately, I found that the code was able to work, the loss was going down, and that the images were being reconstructed (Figure 2)!
+Ultimately, I found that the code was able to work, the [loss was going down](https://wandb.ai/pondoc/world-model/runs/z5zil90x/workspace?workspace=user-cpondoc), and that the images were being reconstructed (Figure 2)!
 
 <p align="center">
   <img src="imgs/nocturne_wm.png" />
