@@ -39,6 +39,12 @@ Finally, when reporting the final action, I effectively mapped the two actions i
 
 I first started off by trying out the DITTO code to generate a WM for Breakout. The code was working, and I was able to visualize the WM's reconstruction of the image of the Breakout game, which was super neat.
 
+<p align="center">
+  <img src="imgs/breakout_wm.png" />
+  <br />
+  Figure 2: Example reconstruction of Breakout image from World Model.
+</p>
+
 From there, I took a stab at training a WM based on the Nocturne data that I had collected. In general, just to align alongside of the existing DITTO code, not much had to be changed. In particular, perhaps the biggest change was defining the correct dimensionality of the action space to ensure that the function `fix_actions` would appropriately encode each action as a one-hot vector.
 
 After training for a bit, one issue that I found was that the images were being resized into 64 by 64 pixel images. While these sizes worked for breakout, given the vast amount of details provided in a sample Nocturne scenario, I decided to try and increase the size of the image that the model would reproduce. Specifically, I tried to [output images](https://github.com/cpondoc/DITTO/blob/d3da456d6a096ae12948fc6cadd2962f9e7d7b4a/src/data/d4rl_dataset.py#L40) of 128 by 128 pixel dimensions.
@@ -52,12 +58,13 @@ Ultimately, I found that the code was able to work, the [loss was going down](ht
 <p align="center">
   <img src="imgs/nocturne_wm.png" />
   <br />
-  Figure 2: Example reconstruction of Nocturne image from World Model.
+  Figure 3: Example reconstruction of Nocturne image from World Model.
 </p>
 
 ## Next Steps + Questions
 
 In terms of future work, the most low-hanging fruit is: despite training for about 4 hours with the GPU, I found that the images were still *relatively low-fidelity*. That is: even compared to the downsized 128 by 128 pixel images of the original Nocturne scene, the recreations after the training the model for a couple hundred thousand steps still did not have the fidelity. Thus, I'm curious about whether or not to try:
+- Train for more timesteps
 - Even higher input image, i.e. 256 by 256?
 - More CNN depth?
 - Anything else?
