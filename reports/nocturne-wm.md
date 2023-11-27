@@ -19,6 +19,8 @@ For each simulation, I then followed the below procedure to generate episodes:
 3. After finding an ego vehicle, I then retrieved its action at each timestep (Nocturne has functionality that allows you to retrieve the expert action at each timestep), and also obtained an image of the scene *from the perspective of the ego vehicle*.
 4. Finally, I saved this data into a `.npz` file to use for training.
 
+![Sample Cone Image](imgs/sample_cone_image.png)
+
 ### A Note on the Nocturne Action Space
 
 The action set for a vehicle consists of three components: acceleration, steering, and the head angle. Actions are discretized based on an upper and lower bound.
