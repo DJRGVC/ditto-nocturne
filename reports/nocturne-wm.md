@@ -16,10 +16,14 @@ As part of the [Nocturne](https://github.com/facebookresearch/nocturne) codebase
 For each simulation, I then followed the below procedure to generate episodes:
 1. First, I loaded in the traffic simulation, and set all vehicles to be expertly controlled, which corresponds to how the cars actually moved in the real-life dataset.
 2. For all of the vehicles that moved in the traffic scene, I found a vehicle that was moving (i.e., took an action) at each timestep across the entire episode. I labeled this vehicle the *ego vehicle*.
-3. After finding an ego vehicle, I then retrieved its action at each timestep (Nocturne has functionality that allows you to retrieve the expert action at each timestep), and also obtained an image of the scene *from the perspective of the ego vehicle*.
+3. After finding an ego vehicle, I then retrieved its action at each timestep (Nocturne has functionality that allows you to retrieve the expert action at each timestep), and also obtained an image of the scene *from the perspective of the ego vehicle* (Figure 1).
 4. Finally, I saved this data into a `.npz` file to use for training.
 
-![Sample Cone Image](imgs/sample_cone_image.png)
+<p align="center">
+  <img src="imgs/sample_cone_image.png" />
+  <br />
+  Figure 1: Sample cone image from a Nocturne vehicle agent.
+</p>
 
 ### A Note on the Nocturne Action Space
 
@@ -30,7 +34,6 @@ For the data I was looking through (the mini dataset), all of the head angles we
 After the above, I found that the acceleration could be bounded by [-6, 6], with 13 discrete buckets, and that the steering could be bounded by [-1, 1] with 21 discrete buckets.
 
 Finally, when reporting the final action, I effectively mapped the two actions into a single action. I did this by finding an index for both the acceleration and steering index based on the bounds and discrete buckets. Since this effectively like indexing into a 2D-array, I then imagined "flattening" the 2D-array and finding the corresponding index in the now 1D-array.
-
 
 ## Training the World Model
 
@@ -44,8 +47,13 @@ This took a bit of time and a lot of changing around, but I was able to get it d
 - Adjusting the `cnn_depth` of the Recurrent State Space Model (RSSM) to align with the eventual output of the encoder in the WM architecture
 - Adding an extra pair of an Activation and Transpose 2D Convolutional Layer at the end of the decoder to ensure that the output was 128 by 128
 
-Ultimately, I found that the code was able to work, the loss was going down, and that the images were being reconstructed!
+Ultimately, I found that the code was able to work, the loss was going down, and that the images were being reconstructed (Figure 2)!
 
+<p align="center">
+  <img src="imgs/nocturne_wm.png" />
+  <br />
+  Figure 2: Example reconstruction of Nocturne image from World Model.
+</p>
 
 ## Next Steps + Questions
 
