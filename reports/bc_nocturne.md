@@ -46,6 +46,8 @@ One solution that I was planning on looking at was using the `forward` function 
 
 The other route that would've also been informative was using the Nocturne Gym environment for validation. Similar to the `bc_trainer.py` code, `ac_trainer.py` runs a validation step that tests each agent. Part of this code is making the environment, and then taking steps from that environment. While the Nocturne does come with a Gym environment wrapper, the observations returned are not in the form of the cone images that were used to train the World Model and are flattened tensors. Thus, I tried to get the environment to spit out the corresponding [cone images](https://github.com/cpondoc/ditto-nocturne/blob/main/reports/nocturne-wm.md#creating-the-dataset) we created during the training of the Nocturne World Model.
 
+In particular, the resulting function I was writing would've corresponded quite similar to the `single_test_agent` function I adapted (and was effectively repurposed from the old DITTO code). Like in the `generate_dataset.py` used in creating the dataset, I was planning on having the BC agent control exactly one of the cars, get their cone image observation at each step, and then seeing what action the car would've taken.
+
 However, I kept running into too many issues trying to use this function. In particular, I kept getting a singular bug every time I tried to call the function. I didn't get this bug when running the code locally on my M1 Macbook, but I did keep getting it on the machine with the `3090`:
 
 ```
@@ -61,3 +63,7 @@ Segmentation fault (core dumped)
 ```
 
 At its core, it looks like a driver issue, specifically with regards to running visualizations. However, after trying various hacky recommendations from Stack Overflow, I was not able to figure it out.
+
+## Looking Forward
+
+The updated source code can be found on the [GitHub Repo](https://github.com/cpondoc/ditto-nocturne). With the remaining time I have left, training the agents and visualizing the rollouts within the world model seems like a solvable goal within the next couple of days, and I'm working with Branton to continue improving the Nocturne World Model.
