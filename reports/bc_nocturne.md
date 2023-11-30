@@ -44,4 +44,20 @@ One solution that I was planning on looking at was using the `forward` function 
 
 ### Generating Image Observations from Nocturne to use for Validation
 
-The other route that would've also been informative was using the Nocturne Gym environment for validation. Similar to how
+The other route that would've also been informative was using the Nocturne Gym environment for validation. Similar to the `bc_trainer.py` code, `ac_trainer.py` runs a validation step that tests each agent. Part of this code is making the environment, and then taking steps from that environment. While the Nocturne does come with a Gym environment wrapper, the observations returned are not in the form of the cone images that were used to train the World Model and are flattened tensors. Thus, I tried to get the environment to spit out the corresponding [cone images](https://github.com/cpondoc/ditto-nocturne/blob/main/reports/nocturne-wm.md#creating-the-dataset) we created during the training of the Nocturne World Model.
+
+However, I kept running into too many issues trying to use this function. In particular, I kept getting a singular bug every time I tried to call the function. I didn't get this bug when running the code locally on my M1 Macbook, but I did keep getting it on the machine with the `3090`:
+
+```
+libGL error: MESA-LOADER: failed to open swrast: /usr/lib/dri/swrast_dri.so: cannot open shared object file: No such file or directory (search paths /usr/lib/x86_64-linux-gnu/dri:\$${ORIGIN}/dri:/usr/lib/dri, suffix _dri)
+libGL error: failed to load driver: swrast
+Failed to create an OpenGL context for this window
+sfml-graphics requires support for OpenGL 1.1 or greater
+Ensure that hardware acceleration is enabled if available
+Failed to create texture, its internal size is too high (2048x2048, maximum is 0x0)
+Impossible to create render texture (failed to create the target texture)
+Trying to access the pixels of an empty image
+Segmentation fault (core dumped)
+```
+
+At its core, it looks like a driver issue, specifically with regards to running visualizations. However, after trying various hacky recommendations from Stack Overflow, I was not able to figure it out.
