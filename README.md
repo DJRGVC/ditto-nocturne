@@ -12,7 +12,7 @@ Throughout the four-ish weeks that I worked on the project, I was able to accomp
 
 3. Train a BC agent on the latents of the Nocturne world model. See `bc-nocturne.md` and `visualizing-latents.md`.
 
-4. Train a actor-critic (AC) policy using the Nocturne world model. See `finishing-validation.md`.
+4. Train an actor-critic (AC) policy using the Nocturne world model. See `finishing-validation.md`.
 
 ## How to Set-Up
 
