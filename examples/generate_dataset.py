@@ -1,6 +1,7 @@
 """
 Create clean roll-out data for DITTO World Model.
 """
+# Dependencies
 from cfgs.config import PROJECT_PATH, get_scenario_dict, set_display_window
 from matplotlib import pyplot as plt
 from nocturne import Simulation, Action

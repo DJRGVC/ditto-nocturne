@@ -1,3 +1,11 @@
+"""
+This code sets up a rollout of a BC agent.
+
+From the tutorials, run the Imitation Learning tutorial and train a basic Imitation
+Learning agent. Finally, save the weights, adjust the line the calls `model.load_state_dict`
+to load in the correct path. From there, you should be able to run `test_rollout.py`.
+"""
+
 # General dependencies
 from pathlib import Path
 import numpy as np

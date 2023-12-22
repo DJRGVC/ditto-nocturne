@@ -14,14 +14,6 @@ Throughout the four-ish weeks that I worked on the project, I was able to accomp
 
 4. Train an actor-critic (AC) policy using the Nocturne world model. See `finishing-validation.md`.
 
-## How to Set-Up
-
-First, set up [Nocturne](https://github.com/facebookresearch/nocturne). Then, the submodule should already be set up to point to [Daphne's branch](https://github.com/facebookresearch/nocturne/tree/ca024c35baf0aecb41fe928d025efe5808c3f0c8), which contains tutorials about how to use Nocturne.
-
-### Setting up the Imitation Learning Agent
-
-From the tutorials, run the [Imitation Learning tutorial](https://github.com/facebookresearch/nocturne/blob/ca024c35baf0aecb41fe928d025efe5808c3f0c8/docs/tutorials/03_imitation_learning.md) (`03_imitation_learning.md`) and train a basic Imitation Learning agent. Finally, save the weights, adjust the line the calls `model.load_state_dict` to load in the correct path. From there, you should be able to run `test_rollout.py`.
-
 ## Notes
 
 The `notes` folder contains random fixes/issues I ran into during setting up each of DITTO and Nocturne. Some of the tips might be helpful, so might not be.
