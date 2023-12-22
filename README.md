@@ -24,4 +24,4 @@ From the tutorials, run the [Imitation Learning tutorial](https://github.com/fac
 
 ## Acknowledgments
 
-Shoutout to [Branton Demoss](https://ori.ox.ac.uk/people/branton-demoss/), who advised my work over the term.
+Special thanks to [Branton Demoss](https://ori.ox.ac.uk/people/branton-demoss/), who advised my work over the term.
