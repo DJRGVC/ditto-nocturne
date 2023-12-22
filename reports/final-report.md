@@ -12,7 +12,7 @@ The first part of the project involved setting up Nocturne, which is an RL envir
 
 ## Training a Behavior Cloning Agent on Nocturne
 
-The first step of the project was training a standard Behavior Cloning agent on Nocturne and visualizing a rollout of its policy. Behavior Cloning is a part of a set of techniques known as [Imitation Learning](https://www.ri.cmu.edu/pub_files/2015/3/InvitationToImitation_3_1415.pdf), which is the study of algorithms that improve performance by observing demonstrations from a teacher. Specifically, we aim to learn a stochastic policy $\pi(a \mid s, \theta)$ that maps states to actions and learns parameters $\theta$. This policy will learn from collected human driver demonstrations and output expert actions with high likelihood. More information on the specifics of the Behavior Cloning for Nocturne can be found using [Daphne's great tutorial](https://github.com/daphnecor/nocturne/blob/intro_tutorials/docs/tutorials/03_imitation_learning.md).
+The first step of the project was training a standard Behavior Cloning agent on Nocturne and visualizing a rollout of its policy. Behavior Cloning is a part of a set of techniques known as [Imitation Learning](https://www.ri.cmu.edu/pub_files/2015/3/InvitationToImitation_3_1415.pdf), which is the study of algorithms that improve performance by observing demonstrations from a teacher. Specifically, we aim to learn a stochastic policy $$\pi(a \mid s, \theta)$$ that maps states to actions and learns parameters $$\theta$$. This policy will learn from collected human driver demonstrations and output expert actions with high likelihood. More information on the specifics of the Behavior Cloning for Nocturne can be found using [Daphne's great tutorial](https://github.com/daphnecor/nocturne/blob/intro_tutorials/docs/tutorials/03_imitation_learning.md).
 
 To run the agent, I followed Daphne's tutorial to train a policy and saved the weights. I then wrote a [function](https://github.com/cpondoc/ditto-nocturne/blob/main/examples/test_rollout.py) that takes the same BC agent and rolls it out to a specific scenario within the Nocturne environment. Overall, since the agent only learns on such few demonstrations, the agent is not able to perform relatively well and gets derailed quite quickly.
 
@@ -35,7 +35,7 @@ For each simulation, I then followed the below procedure to generate episodes:
 4. Finally, I saved this data into a `.npz` file to use for training.
 
 <p align="center">
-  <img src="weekly/imgs/sample_cone_image.png" />
+  <img src="https://github.com/cpondoc/ditto-nocturne/blob/main/reports/weekly/imgs/sample_cone_image.png?raw=true" />
   <br />
   Figure 1: Sample cone image from a Nocturne vehicle agent.
 </p>
@@ -44,7 +44,7 @@ For each simulation, I then followed the below procedure to generate episodes:
 
 The action set for a vehicle consists of three components: acceleration, steering, and the head angle. Actions are discretized based on an upper and lower bound.
 
-For the data I was looking through (the mini dataset), all of the head angles were set to 0. Thus, I only had to decide on the discretization for the acceleration and steering. In both instances, I took the following steps, I collected all of the corresponding metrics across all vehicles in all traffic scenes at each time step. Then, I generated a histogram and visualized where appropriate upper and louwer bounds would be.
+For the data I was looking through (the mini dataset), all of the head angles were set to 0. Thus, I only had to decide on the discretization for the acceleration and steering. In both instances, I took the following steps, I collected all of the corresponding metrics across all vehicles in all traffic scenes at each time step. Then, I generated a histogram and visualized where appropriate upper and lower bounds would be.
 
 After the above, I found that the acceleration could be bounded by [-6, 6], with 13 discrete buckets, and that the steering could be bounded by [-1, 1] with 21 discrete buckets.
 
@@ -63,9 +63,9 @@ This took a bit of time and a lot of changing around, but I was able to get it d
 Ultimately, I found that the code was able to work, the [loss was going down](https://wandb.ai/pondoc/world-model/runs/z5zil90x/workspace?workspace=user-cpondoc), and that the images were being reconstructed (Figure 2)!
 
 <p align="center">
-  <img src="weekly/imgs/nocturne_wm.png" />
+  <img src="https://github.com/cpondoc/ditto-nocturne/blob/main/reports/weekly/imgs/nocturne_wm.png?raw=true" />
   <br />
-  Figure 3: Example reconstruction of Nocturne image from World Model.
+  Figure 2: Example reconstruction of Nocturne image from World Model.
 </p>
 
 ## Overview of DITTO
@@ -76,25 +76,25 @@ DITTO's core contribution is the optimization of a novel distance measure define
 
 The final step I took was training agents within the world model of Nocturne. I started with [training a BC agent](https://github.com/cpondoc/DITTO/blob/506ac2b398a847e564e812684fe1fc87aff3bae0/src/trainers/ac_trainer.py#L324) that takes the latents generated by the WM, uses the policy to predict a distribution of potential actions, and computed the cross-entropy loss between the true actions taken by the expert and the actions predicted by the agent.
 
-Within the DITTO codebase, training a BC agent on the latents is a part of the normal training loop of the actor-critic policy. An experimental [training run](https://wandb.ai/pondoc/dreamer/runs/7gip2isc?workspace=user-cpondoc) showed that the loss was indeed going down.
+Within the DITTO codebase, training a BC agent on the latents is a part of the normal training loop of the actor-critic policy. An experimental [training run](https://wandb.ai/pondoc/dreamer/runs/7gip2isc?workspace=user-cpondoc) showed that the loss was indeed going down (Figure 3).
 
 <p align="center">
-  <img src="weekly/imgs/bc_nocturne_loss.png" />
+  <img src="https://github.com/cpondoc/ditto-nocturne/blob/main/reports/weekly/imgs/bc_nocturne_loss.png?raw=true" />
   <br />
-  Figure 4: Loss from BC agent trained on latents of Nocturne WM.
+  Figure 3: Loss from BC agent trained on latents of Nocturne WM.
 </p>
 
 To visualize the rollout of a BC agent in the latent space, I wrote a function that loops to grab the current latent state, uses the policy to generate a set of actions, and then uses those actions and current state to `dream`, or take a step in the WM. Further, the `state` returned after taking a step in the WM can be utilized to recreate an actual observation from the WM: all I had to do was index into the first dimension of the state (since the function still returned batched observation) so I could retrieve the properly sized latent that could be passed into the decoder. From there, I was able to write a function for the decoder that was able to recover an image just from the latents (no existing function with this sole job), and I was able to generate what the world model would look like after taking an action in the latent space:
 
 <p align="center">
-  <img src="weekly/imgs/wm-latent-step.png" />
+  <img src="https://github.com/cpondoc/ditto-nocturne/blob/main/reports/weekly/imgs/wm-latent-step.png?raw=true" />
   <br />
-  Figure 5: A reconstruction of the visualization of the Nocturne environment from a step in the latent space of the world model.
+  Figure 4: A reconstruction of the visualization of the Nocturne environment from a step in the latent space of the world model.
 </p>
 
 ## Training an Actor-Critic Agent on the World Model
 
-Finally, the last agent I trained was the actor-critic agent. As outlined in the DITTO paper, the authors used an agent composed of a stochastic actor which samples actions from a learned policy with parameter vector $\theta$, and a deterministic critic which predicts the expected sum of future rewards the actor will achieve from the current state with parameter vector $\psi$. 
+Finally, the last agent I trained was the actor-critic agent. As outlined in the DITTO paper, the authors used an agent composed of a stochastic actor which samples actions from a learned policy with parameter vector $$\theta$$, and a deterministic critic which predicts the expected sum of future rewards the actor will achieve from the current state with parameter vector $$\psi$$. 
 
 Overall, the training loop works without error, with the main issue being fixing the validation part of training. While I was able to fix the issues regarding the validation function at least once, the issues still remain open and require a bit of debugging, with some [notes](https://github.com/cpondoc/ditto-nocturne/blob/main/reports/weekly/finishing-validation.md) from listed in the weekly reports. However, perhaps the most important contribution is writing a new function for validation for Nocturne, which involves:
 
