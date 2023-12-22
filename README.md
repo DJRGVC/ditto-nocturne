@@ -1,6 +1,6 @@
 # DITTO-Nocturne
 
-This is work done as part of my tutorial at Oxford during the 2023 Michaelmas term. Specifically, I worked on applying the [DITTO](https://arxiv.org/abs/2302.03086) framework to the [Nocturne](https://github.com/facebookresearch/nocturne) RL environment.
+This is work done as part of my tutorial at Oxford during the 2023 Michaelmas term. Specifically, I worked on applying the [DITTO](https://arxiv.org/abs/2302.03086) framework to the [Nocturne](https://github.com/facebookresearch/nocturne) RL environment. Check out the blog post [here](https://www.chrispondoc.com/tutorial-oxford/).
 
 ## Outline of Work
 
