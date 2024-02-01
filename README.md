@@ -1,10 +1,10 @@
 # DITTO-Nocturne
 
-This is work done as part of my tutorial at Oxford during the 2023 Michaelmas term. Specifically, I worked on applying the [DITTO](https://arxiv.org/abs/2302.03086) framework to the [Nocturne](https://github.com/facebookresearch/nocturne) RL environment. Check out the blog post [here](https://www.chrispondoc.com/tutorial-oxford/).
+This work is done collaboratively with Branton DeMoss (https://brantondemoss.com), a mentor and creator of the [DITTO](https://arxiv.org/abs/2302.03086) framework (https://arxiv.org/abs/2302.03086) central to this project. This repo serves as a continuation to work done by [Chris Pondoc](https://www.chrispondoc.com/tutorial-oxford/) during the Oxford University Michealmas term of 2023. We are applying the DITTO framework to the [Nocturne](https://github.com/facebookresearch/nocturne) RL environment, alongside a few other benchmark environments. 
 
 ## Outline of Work
 
-Throughout the four-ish weeks that I worked on the project, I was able to accomplish the following milestones. For all reports, check out the `reports/` folder:
+Here is a brief summary of the work Chris Pondoc did before I began working on this project: (For all reports, including Chris's, check out the `reports/` folder)
 
 1. Train a simple behavior cloning agent (BC) that was able to learn to drive within the Nocturne environment. I was also able to generate [rollouts](https://github.com/cpondoc/ditto-nocturne/blob/main/examples/test_rollout.py) using this agent.
 
@@ -14,10 +14,10 @@ Throughout the four-ish weeks that I worked on the project, I was able to accomp
 
 4. Train an actor-critic (AC) policy using the Nocturne world model. See `finishing-validation.md`.
 
-## Notes
+Below are my major updates to the program, chronologically ordered by work period:
 
-The `notes` folder contains random fixes/issues I ran into during setting up each of DITTO and Nocturne. Some of the tips might be helpful, so might not be.
+1. Comparing *all* expert rollouts to current step of training rather than simply the next step of the current nearest expert rollout. [Week 1-2 (Jan 22 - Feb 3, 2024)](https://arxiv.org/abs/2302.03086)
 
 ## Acknowledgments
 
-Special thanks to [Branton Demoss](https://ori.ox.ac.uk/people/branton-demoss/), who advised my work over the term.
+Thanks to [Branton Demoss](https://ori.ox.ac.uk/people/branton-demoss/) who graciously allowed me to participate in tutorials alongside Chris Pondoc During the Michealmas Term. Also, thanks to Chris himself for spending time to fill me in on the progress he had made over the Christmas break preceding my work on this project.
