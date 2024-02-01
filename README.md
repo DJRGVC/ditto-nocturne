@@ -16,7 +16,7 @@ Here is a brief summary of the work Chris Pondoc did before I began working on t
 
 Below are my major updates to the program, chronologically ordered by work period:
 
-1. Comparing *all* expert rollouts to current step of training rather than simply the next step of the current nearest expert rollout. [Week 1-2 (Jan 22 - Feb 3, 2024)](https://arxiv.org/abs/2302.03086)
+1. Comparing *all* expert rollouts to current step of training rather than simply the next step of the current nearest expert rollout. [Week 1-2 (Jan 22 - Feb 3, 2024)](https://github.com/DJRGVC/ditto-nocturne/blob/main/reports/Daniel/Week1-2.md)
 
 ## Acknowledgments
 
