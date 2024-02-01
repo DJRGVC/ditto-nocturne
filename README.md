@@ -6,7 +6,7 @@ This work is done collaboratively with Branton DeMoss (https://brantondemoss.com
 
 Here is a brief summary of the work Chris Pondoc did before I began working on this project: (For all reports, including Chris's, check out the `reports/` folder)
 
-1. Train a simple behavior cloning agent (BC) that was able to learn to drive within the Nocturne environment. I was also able to generate [rollouts](https://github.com/cpondoc/ditto-nocturne/blob/main/examples/test_rollout.py) using this agent.
+1. Train a simple behavior cloning agent (BC) that was able to learn to drive within the Nocturne environment. I was also able to generate [rollouts](https://github.com/DJRGVC/ditto-nocturne/blob/main/examples/test_rollout.py) using this agent.
 
 2. Train a [world model](https://worldmodels.github.io/) on Nocturne, using expert state action pairs from Waymo. See `nocturne-wm.md`.
 
@@ -20,4 +20,4 @@ Below are my major updates to the program, chronologically ordered by work perio
 
 ## Acknowledgments
 
-Thanks to [Branton Demoss](https://ori.ox.ac.uk/people/branton-demoss/) who graciously allowed me to participate in tutorials alongside Chris Pondoc During the Michealmas Term. Also, thanks to Chris himself for spending time to fill me in on the progress he had made over the Christmas break preceding my work on this project.
+Thanks to [Branton Demoss](https://ori.ox.ac.uk/people/branton-demoss/) who graciously allowed me to participate in tutorials alongside Chris Pondoc during the Michealmas Term. Also, thanks to Chris for spending time getting me up to speed on the progress he had made over the Christmas break preceding my work on this project.
