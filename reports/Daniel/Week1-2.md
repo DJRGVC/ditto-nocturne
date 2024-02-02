@@ -1,72 +1,54 @@
-# Setting up a World Model for Nocturne
+# Week One-Two: Getting up to speed with Nocturne and Ditto
 
-For the tutorial on November 27, 2023, I tried to set up a World Model (WM) for Nocturne. For this session and future sessions, I'll be keeping track of all my notes for accountability as well as to go over my work.
+## General Work Outline
 
-## Gathering Data
+Following my first meeting with Branton regarding our work together on this project, we came up with the following list of tasks to complete while I set up my ditto-nocturne working environment:
 
-### Primer on DITTO and Nocturne Episode Data
+1. First set up SSH to work remotely on his system, and fork a new repo for this project
+2. Make sure both DITTO and Nocturne were running smoothly, and go through some of their code examples
+3. Rerun some of Chris's work from last term
+4. And, as the main task, compare *all* expert rollouts to current step of training rather than simply the next step of the current nearest expert rollout.
 
-Given the [DITTO](https://github.com/brantondemoss/DITTO) codebase, you can train a WM based on episodes of a strong PPO agent playing Breakout.
-Each of these files were `.npz` files and contained information containing images of the state, actions taken by the player, the total rewards gained, whether the game was reset or not, and if the state was a terminal state. Thus, I decided to try to collect Nocturne data that was formatted in much the same way.
+## Setting up SSH 
 
-As part of the [Nocturne](https://github.com/facebookresearch/nocturne) codebase, you can download a dataset from Waymo that contains traffic scenes. Each traffic scene consists of a name, road objects and vehicles in the scene, roads, and the states of traffic lights. We can then wrap each of these traffic scenes as a Nocturne simulation, which consists of discretezed traffic scenarios that are snapshots of a traffic situation at a paricular timepoint. Each simulation lasts for 9 seconds, and they are discretized into step sizes of 0.1 seconds, meaning there are 90 total timesteps.
+I am using VSCode's SSH extension to connect to Branton's system. This is a very convenient way to work remotely, as it allows me to use my local machine's resources to run the code, while still being able to access the files and run the code on Branton's system.
 
-### Creating the dataset
+## Initiating Nocturne and DITTO Environments
 
-For each simulation, I then followed the below procedure to generate episodes:
-1. First, I loaded in the traffic simulation, and set all vehicles to be expertly controlled, which corresponds to how the cars actually moved in the real-life dataset.
-2. For all of the vehicles that moved in the traffic scene, I found a vehicle that was moving (i.e., took an action) at each timestep across the entire episode. I labeled this vehicle the *ego vehicle*.
-3. After finding an ego vehicle, I then retrieved its action at each timestep (Nocturne has functionality that allows you to retrieve the expert action at each timestep), and also obtained an image of the scene *from the perspective of the ego vehicle* (Figure 1).
-4. Finally, I saved this data into a `.npz` file to use for training.
+This required downloading some extranous packages, and altering some of the base configuration that comes with the Nocturne version used as a subpackage for this project. More information about the general changes I made are available [here](https://github.com/DJRGVC/ditto-nocturne/blob/main/reports/Installation/tips.md).
 
-<p align="center">
-  <img src="imgs/sample_cone_image.png" />
-  <br />
-  Figure 1: Sample cone image from a Nocturne vehicle agent.
-</p>
+### Brief Introduction to Relevant Frameworks
 
-### A Note on the Nocturne Action Space
+[DITTO](https://github.com/brantondemoss/DITTO) is a codebase that allows training a World Model (WM) based on episodes of a strong PPO agent playing Breakout. The episodes are stored as `.npz` files and contain information such as state images, actions taken, rewards, and terminal states.
 
-The action set for a vehicle consists of three components: acceleration, steering, and the head angle. Actions are discretized based on an upper and lower bound.
+[Nocturne](https://github.com/facebookresearch/nocturne) is a codebase that provides a dataset of traffic scenes from Waymo. Each scene consists of road objects, vehicles, roads, and traffic light states. These scenes can be wrapped as Nocturne simulations, which are discrete traffic scenarios captured at specific time points.
 
-For the data I was looking through (the mini dataset), all of the head angles were set to 0. Thus, I only had to decide on the discretization for the acceleration and steering. In both instances, I took the following steps, I collected all of the corresponding metrics across all vehicles in all traffic scenes at each time step. Then, I generated a histogram and visualized where appropriate upper and louwer bounds would be.
+To generate Nocturne episodes for training a WM, the following steps were taken:
+1. The traffic simulation was loaded, and all vehicles were set to be expertly controlled, mimicking real-life movements.
+2. An "ego vehicle" was identified for each timestep, which is a vehicle that took an action.
+3. The action and an image of the scene from the ego vehicle's perspective were retrieved.
+4. The data was saved as `.npz` files for training.
 
-After the above, I found that the acceleration could be bounded by [-6, 6], with 13 discrete buckets, and that the steering could be bounded by [-1, 1] with 21 discrete buckets.
+By collecting Nocturne data in a format similar to DITTO, it was possible to train a WM using the Nocturne episodes. The WM is trained using the [DreamerV2](https://arxiv.org/abs/2010.02193) algorithm, which is a combination of a Recurrent State Space Model (RSSM) and a VAE. The RSSM is trained to predict the next state and reward given the current state and action, while the VAE is trained to reconstruct the input image.
 
-Finally, when reporting the final action, I effectively mapped the two actions into a single action. I did this by finding an index for both the acceleration and steering index based on the bounds and discrete buckets. Since this effectively like indexing into a 2D-array, I then imagined "flattening" the 2D-array and finding the corresponding index in the now 1D-array.
+## Training the World Model & Altering Expert Rollouts
 
-## Training the World Model
-
-I first started off by trying out the DITTO code to generate a WM for Breakout. The [code was working](https://wandb.ai/pondoc/world-model/runs/fh61muz2?workspace=user-cpondoc), and I was able to visualize the WM's reconstruction of the image of the Breakout game, which was super neat.
-
-<p align="center">
-  <img src="imgs/breakout_wm.png" />
-  <br />
-  Figure 2: Example reconstruction of Breakout image from World Model.
-</p>
-
-From there, I took a stab at training a WM based on the Nocturne data that I had collected. In general, just to align alongside of the existing DITTO code, not much had to be changed. In particular, perhaps the biggest change was defining the correct dimensionality of the action space to ensure that the function `fix_actions` would appropriately encode each action as a one-hot vector.
-
-After training for a bit, one issue that I found was that the images were being resized into 64 by 64 pixel images. While these sizes worked for breakout, given the vast amount of details provided in a sample Nocturne scenario, I decided to try and increase the size of the image that the model would reproduce. Specifically, I tried to [output images](https://github.com/cpondoc/DITTO/blob/d3da456d6a096ae12948fc6cadd2962f9e7d7b4a/src/data/d4rl_dataset.py#L40) of 128 by 128 pixel dimensions.
-
-This took a bit of time and a lot of changing around, but I was able to get it done. The steps I took were the following:
-- Adjusting the `cnn_depth` within [`config.py`](https://github.com/cpondoc/DITTO/blob/d3da456d6a096ae12948fc6cadd2962f9e7d7b4a/src/config/config.py#L26) of the Recurrent State Space Model (RSSM) to align with the eventual output of the encoder in the WM architecture
-- Adding an [extra pair](https://github.com/cpondoc/DITTO/blob/d3da456d6a096ae12948fc6cadd2962f9e7d7b4a/src/models/decoders.py#L61) of an Activation and Transpose 2D Convolutional Layer at the end of the decoder to ensure that the output was 128 by 128
-
-Ultimately, I found that the code was able to work, the [loss was going down](https://wandb.ai/pondoc/world-model/runs/z5zil90x/workspace?workspace=user-cpondoc), and that the images were being reconstructed (Figure 2)!
-
-<p align="center">
-  <img src="imgs/nocturne_wm.png" />
-  <br />
-  Figure 3: Example reconstruction of Nocturne image from World Model.
-</p>
+*This is a work in progress, and will carry on to a weekend task*
 
 ## Next Steps + Questions
 
-In terms of future work, the most low-hanging fruit is: despite training for about 4 hours with the GPU, I found that the images were still *relatively low-fidelity*. That is: even compared to the downsized 128 by 128 pixel images of the original Nocturne scene, the recreations after the training the model for a couple hundred thousand steps still did not have the fidelity. Thus, I'm curious about whether or not to try:
-- Train for more timesteps
-- Even higher input image, i.e. 256 by 256?
-- More CNN depth?
-- Anything else?
+Completed steps for this project include:
 
-After this, I can also start experiment with training an actor-critic.
+1. Complete the setup of SSH to work remotely on Branton's system and fork a new repo for the project.
+2. Ensure that both DITTO and Nocturne are running smoothly by going through their code examples.
+3. Rerun some of Chris's work from last term to familiarize myself with the project.
+
+However, the main task of comparing *all* expert rollouts to the current step of training rather than simply the next step of the current nearest expert rollout is still in progress. This will be the main focus of my work in the coming days.
+
+Some questions to I will be considering as I continue to work on this project include:
+
+1. How can I compare all expert rollouts to the current step of training? What exactly does this entail from a technical standpoint?
+2. Will it even perform better than the current method of comparing the next step of the current nearest expert rollout? What are the potential benefits and drawbacks of this approach?
+3. After making this change, what are the next steps in the project? What are obvious next tasks that I should be considering?
+
+##*Cheers*
